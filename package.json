@@ -14,7 +14,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "node ./scripts/publish.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -30,5 +31,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "chalk": "^2.4.2",
+    "fs-extra": "^8.0.1",
+    "husky": "^2.4.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn build && yarn deploy"
+    }
   }
 }
