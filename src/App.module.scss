@@ -1,0 +1,11 @@
+.App {
+  display: flex;
+  height: 100vh;
+}
+.Container {
+  flex: 1;
+  flex-basis: 50%;
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+}

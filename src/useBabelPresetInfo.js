@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import normalizeOptions from './babel/src/normalize-options';
 import moduleTransformations from './babel/src/module-transformations';
 import getOptionSpecificExcludesFor from './babel/src/get-option-specific-excludes';
@@ -120,15 +120,21 @@ function getPresetInformation(opts) {
   return { plugins, targets: transformTargets };
 }
 
-export default function useBabelPresetInfo() {
+export default function useBabelPresetInfo(value) {
+  const [error, setError] = React.useState(null);
   const [plugins, setPlugins] = React.useState([]);
-  const [targets, setTargets] = React.useState([]);
+  const [targets, setTargets] = React.useState({});
 
-  const getPresetInfo = value => {
-    const options = JSON.parse(value);
-    const { plugins, targets } = getPresetInformation(options);
-    setPlugins(plugins);
-    setTargets(targets);
-  };
-  return [getPresetInfo, plugins, targets];
+  useEffect(() => {
+    try {
+      const options = JSON.parse(value);
+      const { plugins, targets } = getPresetInformation(options);
+      setPlugins(plugins);
+      setTargets(targets);
+      setError(null);
+    } catch (error) {
+      setError(error);
+    }
+  }, [value]);
+  return [plugins, targets, error];
 }
