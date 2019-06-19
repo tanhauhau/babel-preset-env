@@ -1,8 +1,9 @@
 import React from 'react';
 import { version as babelVersion } from './babel/package.json';
-import { Collapse, Statistic, List, Icon } from 'antd';
+import { Collapse, Statistic, List } from 'antd';
 import 'brace';
 import AceEditor from 'react-ace';
+import Plugin from './components/Plugin';
 import useBabelPresetInfo from './useBabelPresetInfo';
 
 import 'brace/mode/json';
@@ -20,13 +21,12 @@ function App() {
   const [value, setValue] = React.useState(initialValue);
   const debouncedValue = useDebounce(value, 100);
   const [plugins, targets, error] = useBabelPresetInfo(debouncedValue);
-  
+
   useQueryParams({ value: debouncedValue });
 
   return (
     <div className={styles.App}>
-      <div className={styles.Container}>
-        <b>@babel/preset-env version: {babelVersion}</b>
+      <div className={styles.Editor}>
         <AceEditor
           mode="json"
           theme="github"
@@ -40,7 +40,7 @@ function App() {
           setOptions={{ useWorker: false }}
         />
       </div>
-      <div className={styles.Container}>
+      <div className={styles.Result}>
         {error ? (
           <pre>{error.toString()}</pre>
         ) : (
@@ -48,7 +48,7 @@ function App() {
             {Object.keys(targets).length > 0 ? (
               <Collapse.Panel header="Minimum Browser Support" key="1">
                 <List
-                  grid={{ gutter: 16, column: 4 }}
+                  grid={{ gutter: 16, xs: 2, sm: 2, md: 4, lg: 4, xl: 6 }}
                   dataSource={Object.keys(targets)}
                   renderItem={target => (
                     <List.Item>
@@ -62,26 +62,38 @@ function App() {
               <List
                 itemLayout="horizontal"
                 dataSource={plugins}
-                renderItem={plugin => (
-                  <List.Item.Meta
-                    title={
-                      <a
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        href={`https://babeljs.io/docs/en/babel-plugin-${
-                          plugin[0]
-                        }`}
-                      >
-                        {plugin[0]} <Icon type="link" />
-                      </a>
-                    }
-                    description={JSON.stringify(plugin[1])}
-                  />
-                )}
+                renderItem={plugin => <Plugin plugin={plugin} />}
               />
             </Collapse.Panel>
           </Collapse>
         )}
+      </div>
+      <div className={styles.Footer}>
+        <b>@babel/preset-env version: {babelVersion}</b>
+        {' | Built with '}
+        <a
+          href="https://reactjs.org/"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          React
+        </a>
+        {', '}
+        <a href="https://ant.design" rel="noopener noreferrer" target="_blank">
+          Ant Design
+        </a>
+        {', '}
+        <a href="http://babeljs.io" rel="noopener noreferrer" target="_blank">
+          Babel
+        </a>
+        {' and ❤| '}
+        <a
+          href="https://github.com/tanhauhau/babel-preset-env"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Github
+        </a>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Babel Preset Env",
+  "name": "How setting preset-env affects your babel configurations",
   "icons": [
     {
       "src": "favicon.ico",

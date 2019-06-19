@@ -129,7 +129,7 @@ export default function useBabelPresetInfo(value) {
     try {
       const options = JSON.parse(value);
       const { plugins, targets } = getPresetInformation(options);
-      setPlugins(plugins);
+      setPlugins(filterPlugins(plugins));
       setTargets(targets);
       setError(null);
     } catch (error) {
@@ -137,4 +137,9 @@ export default function useBabelPresetInfo(value) {
     }
   }, [value]);
   return [plugins, targets, error];
+}
+
+function filterPlugins(plugins) {
+  // filter away syntax, because they are just confusing
+  return plugins.filter(plugin => !/^syntax-/.test(plugin[0]))
 }

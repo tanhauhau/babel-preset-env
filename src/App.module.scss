@@ -1,11 +1,43 @@
 .App {
-  display: flex;
   height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr auto;
 }
-.Container {
-  flex: 1;
-  flex-basis: 50%;
-  display: flex;
-  flex-direction: column;
+
+.Editor {
   overflow: scroll;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.Result {
+  overflow: scroll;
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.Footer {
+  padding: 4px 8px;
+  grid-column: 1 / 3;
+  grid-row: 2;
+}
+
+@media only screen and (max-width: 600px) {
+  .App {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr auto;
+  }
+  .Editor {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .Result {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .Footer {
+    grid-column: 1;
+    grid-row: 3;
+  }
 }
