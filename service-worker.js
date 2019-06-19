@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.0/workbox-sw.js");
 
 importScripts(
-  "/babel-preset-env/precache-manifest.cfec57e6170b4ccaa1a2e216feb2c4e9.js"
+  "/babel-preset-env/precache-manifest.93a1debea17e8d40f9698fc8461169a5.js"
 );
 
 self.addEventListener('message', (event) => {
