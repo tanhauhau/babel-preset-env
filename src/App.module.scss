@@ -7,8 +7,18 @@
 
 .Editor {
   overflow: scroll;
+  display: flex;
+  flex-direction: column;
   grid-column: 1;
   grid-row: 1;
+
+  &Toolbar {
+    flex: 0;
+    padding: 4px 8px;
+  }
+  &Container {
+    flex: 1;
+  }
 }
 
 .Result {
@@ -40,4 +50,8 @@
     grid-column: 1;
     grid-row: 3;
   }
+}
+
+:global(.ant-list-item-meta) {
+  margin-bottom: 8px;
 }

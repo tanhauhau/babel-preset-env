@@ -1,9 +1,9 @@
 import React from 'react';
 import { version as babelVersion } from './babel/package.json';
-import { Collapse, Statistic, List } from 'antd';
+import { Collapse, Statistic, List, Switch } from 'antd';
 import 'brace';
 import AceEditor from 'react-ace';
-import Plugin from './components/Plugin';
+import Plugin, { diff } from './components/Plugin';
 import useBabelPresetInfo from './useBabelPresetInfo';
 
 import 'brace/mode/json';
@@ -14,45 +14,98 @@ import 'antd/dist/antd.css';
 import styles from './App.module.scss';
 import { useQueryParams, getQueryParams } from './useQueryParams.js';
 
-const { value: initialValue = '{}' } = getQueryParams();
-
+const {
+  value: initialValue1 = '{}',
+  value2: initialValue2 = '{}',
+} = getQueryParams();
+const initialUseDiff = initialValue2 !== '{}';
 // Render editor
 function App() {
-  const [value, setValue] = React.useState(initialValue);
-  const debouncedValue = useDebounce(value, 100);
-  const [plugins, targets, error] = useBabelPresetInfo(debouncedValue);
+  const [diffMode, setDiffMode] = React.useState(initialUseDiff);
+  const [value1, setValue1] = React.useState(initialValue1);
+  const [value2, setValue2] = React.useState(initialValue2);
+  const debouncedValue1 = useDebounce(value1, 100);
+  const debouncedValue2 = useDebounce(value2, 100);
+  const [plugins1, targets1, error1] = useBabelPresetInfo(debouncedValue1);
+  const [plugins2, targets2, error2] = useBabelPresetInfo(debouncedValue2);
 
-  useQueryParams({ value: debouncedValue });
+  useQueryParams({ value: debouncedValue1, value2: debouncedValue2 });
 
   return (
     <div className={styles.App}>
       <div className={styles.Editor}>
-        <AceEditor
-          mode="json"
-          theme="github"
-          width="100%"
-          height="100%"
-          value={value}
-          onChange={setValue}
-          name="babel-preset-env"
-          showPrintMargin={false}
-          editorProps={{ $blockScrolling: true }}
-          setOptions={{ useWorker: false }}
-        />
+        <div className={styles.EditorToolbar}>
+          <Switch
+            checkedChildren="Diff Mode"
+            unCheckedChildren="Diff Mode"
+            checked={diffMode}
+            onChange={setDiffMode}
+          />
+        </div>
+        <div className={styles.EditorContainer}>
+          <AceEditor
+            mode="json"
+            theme="github"
+            width="100%"
+            height={diffMode ? '50%' : '100%'}
+            value={value1}
+            onChange={setValue1}
+            name="code1"
+            showPrintMargin={false}
+            editorProps={{ $blockScrolling: true }}
+            setOptions={{ useWorker: false }}
+          />
+          {diffMode ? (
+            <AceEditor
+              mode="json"
+              theme="github"
+              width="100%"
+              height={diffMode ? '50%' : '100%'}
+              value={value2}
+              onChange={setValue2}
+              name="code2"
+              showPrintMargin={false}
+              editorProps={{ $blockScrolling: true }}
+              setOptions={{ useWorker: false }}
+            />
+          ) : null}
+        </div>
       </div>
       <div className={styles.Result}>
-        {error ? (
-          <pre>{error.toString()}</pre>
+        {error1 || error2 ? (
+          <pre>{error1 ? error1.toString() : error2.toString()}</pre>
         ) : (
-          <Collapse bordered={false} defaultActiveKey={['1', '2']}>
-            {Object.keys(targets).length > 0 ? (
-              <Collapse.Panel header="Minimum Browser Support" key="1">
+          <Collapse
+            bordered={false}
+            defaultActiveKey={['browser1', 'browser2', 'plugin']}
+          >
+            {Object.keys(targets1).length > 0 ? (
+              <Collapse.Panel
+                header={`Minimum Browser Support${diffMode ? ' 1' : ''}`}
+                key="browser1"
+              >
                 <List
                   grid={{ gutter: 16, xs: 2, sm: 2, md: 4, lg: 4, xl: 6 }}
-                  dataSource={Object.keys(targets)}
+                  dataSource={Object.keys(targets1)}
                   renderItem={target => (
                     <List.Item>
-                      <Statistic title={target} value={targets[target]} />
+                      <Statistic title={target} value={targets1[target]} />
+                    </List.Item>
+                  )}
+                />
+              </Collapse.Panel>
+            ) : null}
+            {Object.keys(targets2).length > 0 ? (
+              <Collapse.Panel
+                header={`Minimum Browser Support${diffMode ? ' 2' : ''}`}
+                key="browser2"
+              >
+                <List
+                  grid={{ gutter: 16, xs: 2, sm: 2, md: 4, lg: 4, xl: 6 }}
+                  dataSource={Object.keys(targets2)}
+                  renderItem={target => (
+                    <List.Item>
+                      <Statistic title={target} value={targets2[target]} />
                     </List.Item>
                   )}
                 />
@@ -60,9 +113,12 @@ function App() {
             ) : null}
             <Collapse.Panel header="Plugins" key="2">
               <List
+                size="large"
                 itemLayout="horizontal"
-                dataSource={plugins}
-                renderItem={plugin => <Plugin plugin={plugin} />}
+                dataSource={diffMode ? diff(plugins1, plugins2) : plugins1}
+                renderItem={plugin => (
+                  <Plugin plugin={plugin} diffMode={diffMode} />
+                )}
               />
             </Collapse.Panel>
           </Collapse>
