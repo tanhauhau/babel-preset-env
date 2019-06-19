@@ -1,0 +1,14 @@
+%item {
+  margin-right: 12px;
+  white-space: nowrap;
+  display: inline-block;
+}
+.item {
+  @extend %item;
+  color: rgba(0, 0, 0, 0.3);
+  font-weight: lighter;
+}
+.itemSelected {
+  @extend %item;
+  color: rgba(0, 0, 0, 0.65);
+}

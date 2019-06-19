@@ -111,13 +111,17 @@ function App() {
                 />
               </Collapse.Panel>
             ) : null}
-            <Collapse.Panel header="Plugins" key="2">
+            <Collapse.Panel header="Plugins" key="plugin">
               <List
                 size="large"
                 itemLayout="horizontal"
                 dataSource={diffMode ? diff(plugins1, plugins2) : plugins1}
                 renderItem={plugin => (
-                  <Plugin plugin={plugin} diffMode={diffMode} />
+                  <Plugin
+                    plugin={plugin}
+                    diffMode={diffMode}
+                    selectedPlatforms={{ ...targets1, ...targets2 }}
+                  />
                 )}
               />
             </Collapse.Panel>

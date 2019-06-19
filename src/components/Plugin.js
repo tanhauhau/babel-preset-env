@@ -1,6 +1,22 @@
 import React from 'react';
 import { List, Icon, Tag } from 'antd';
 import pluginMap from '../babel/data/plugins.json';
+import styles from './Plugin.module.scss';
+
+const ALL_PLATFORMS = [
+  'chrome',
+  'firefox',
+  'safari',
+  'ie',
+  'edge',
+  'opera',
+  'ios',
+  'android',
+  'node',
+  'samsung',
+  'electron',
+  'phantom',
+];
 
 const ICON_MAP = {
   chrome: 'fab fa-chrome',
@@ -14,7 +30,7 @@ const ICON_MAP = {
   android: 'fab fa-android',
 };
 
-export default function Plugin({ plugin, diffMode }) {
+export default function Plugin({ plugin, diffMode, selectedPlatforms }) {
   let added = false;
   let removed = false;
   if (diffMode) {
@@ -44,7 +60,10 @@ export default function Plugin({ plugin, diffMode }) {
         <>
           <div>{JSON.stringify(plugin[1])}</div>
           <div>
-            <PlatformList platforms={pluginMap[plugin[0]]} />
+            <PlatformList
+              platforms={pluginMap[plugin[0]]}
+              selectedPlatforms={selectedPlatforms}
+            />
           </div>
         </>
       }
@@ -52,17 +71,21 @@ export default function Plugin({ plugin, diffMode }) {
   );
 }
 
-function PlatformList({ platforms }) {
+function PlatformList({ platforms, selectedPlatforms }) {
   if (typeof platforms !== 'object') return null;
   return (
     <>
       <b>{'Requires: '}</b>
-      {Object.keys(platforms).map(platform => {
+      {ALL_PLATFORMS.map(platform => {
         const iconClass = ICON_MAP[platform];
-        const icon = iconClass ? <i class={iconClass} /> : <b>{platform}</b>;
+        const icon = iconClass ? <i className={iconClass} /> : <b>{platform}</b>;
+        const selected = platform in selectedPlatforms;
         return (
-          <span key={platform} style={{ marginRight: 12 }}>
-            {icon} {platforms[platform]}
+          <span
+            key={platform}
+            className={selected ? styles.itemSelected : styles.item}
+          >
+            {icon} {platforms[platform] || '-'}
           </span>
         );
       })}
